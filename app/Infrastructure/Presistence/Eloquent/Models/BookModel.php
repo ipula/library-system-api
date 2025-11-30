@@ -3,9 +3,11 @@
 namespace App\Infrastructure\Presistence\Eloquent\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BookModel extends Model
 {
+    use SoftDeletes;
     protected $table = 'books';
 
     /**

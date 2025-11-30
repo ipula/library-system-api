@@ -2,12 +2,9 @@
 
 namespace App\Infrastructure\Presistence\Eloquent\Repositories;
 
-use App\Application\Book\DTO\BookDTO;
-use App\Application\Book\DTO\PaginatedBookResponseDTO;
 use App\Domain\Book\Entities\Book;
 use App\Domain\Book\Repositories\BookRepository;
 use App\Infrastructure\Presistence\Eloquent\Models\BookModel;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -19,27 +16,38 @@ class EloquentBookRepository implements BookRepository
 
     public function findById(int $id): ?Book
     {
-        $this->model->newQuery()
-            ->where('id', $id)
-            ->first();
-    }
-
-    public function findByTitle(string $title): ?Book
-    {
-        // TODO: Implement findByTitle() method.
+        $book = $this->model->newQuery()->find($id);
+        return new Book(
+            id: $book->id,
+            title: $book->title,
+            author: $book->author,
+            isbn: $book->isbn,
+            description: $book->description,
+            genres: $book->genres,
+            stock: $book->stock
+        );
     }
 
     public function findByIsbn(string $isbn): ?Book
     {
-        $this->model->newQuery()
+        $book = $this->model->newQuery()
             ->where('isbn', $isbn)
             ->first();
+        return new Book(
+            id: $book->id,
+            title: $book->title,
+            author: $book->author,
+            isbn: $book->isbn,
+            description: $book->description,
+            genres: $book->genres,
+            stock: $book->stock
+        );
     }
 
     public function save(Book $book): ?Book
     {
         $newBook = $book->getId()
-            ? $this->model->newQuery()->findByIsbn($book->getIsbn())
+            ? $this->model->newQuery()->findOrFail($book->getId())
             : new BookModel();
 
         $newBook->title = $book->getTitle();
@@ -59,7 +67,35 @@ class EloquentBookRepository implements BookRepository
 
     public function all(Request $request): LengthAwarePaginator
     {
-        $models = $this->model->query()->paginate($request->get('perPage'));
+        $query = $this->model->query();
+        $sortBy = $request->get('sortBy') ? $request->get('sortBy') : 'id';
+        $orderBy = $request->get('orderBy') ? $request->get('orderBy') : 'asc';
+        $genre = $request->get('genre') ? $request->get('genre') : null;
+        $search = $request->get('search') ? $request->get('search') : null;
+
+        if ($search !== null && $search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', '%' . $search . '%')
+                    ->orWhere('author', 'like', '%' . $search . '%')
+                    ->orWhere('isbn', 'like', '%' . $search . '%')
+                    ->orWhereJsonContains('genres', $search);
+            });
+        }
+
+        $orderQuery = match ($sortBy) {
+            'title', 'author', 'isbn' =>
+            $query->orderBy($sortBy, $orderBy),
+
+            'availability' =>
+            $query->orderByRaw("CASE WHEN stock > 0 THEN 1 ELSE 0 END $orderBy"),
+
+            default =>
+            $query->orderBy('title', 'asc'),
+        };
+        if($genre){
+            $query->whereJsonContains('genres', $genre);
+        }
+        $models = $orderQuery->paginate($request->get('perPage'));
         // map Eloquent → Domain Entity
         $mapped = $models->getCollection()->map(callback: function (BookModel $model) {
             return new Book(
@@ -77,5 +113,10 @@ class EloquentBookRepository implements BookRepository
         $models->setCollection($mapped);
 
         return $models;
+    }
+
+    public function delete(int $id): ?bool
+    {
+        return  $this->model->query()->where('id',$id)->delete();
     }
 }

@@ -33,6 +33,12 @@ class Book
 
     public function getId(): ?int   { return $this->id; }
     public function setId(int $id): void { $this->id = $id; }
+    public function setTitle(string $title): void { $this->title = $title; }
+    public function setAuthor(string $author): void { $this->author = $author; }
+    public function setIsbn(string $isbn): void { $this->isbn = $isbn; }
+    public function setDescription(int $description): void { $this->description = $description; }
+    public function setStock(int $stock): void { $this->stock = $stock; }
+    public function setGenre(int $genres): void { $this->id = $genres; }
 
     public function increaseStock(int $amount): void
     {
