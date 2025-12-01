@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Application\Book\DTO;
+namespace App\Application\Common\DTO;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class PaginatedBookResponseDTO
+class PaginatedDTO
 {
     public function __construct(
         public array $data,

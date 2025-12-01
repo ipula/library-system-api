@@ -14,6 +14,7 @@ class BookDTO
         public string $isbn,
         public ?string $description,
         public int $stock,
+        public bool $is_available,
     ) {}
 
     public static function fromEntity(Book $book): self
@@ -26,11 +27,21 @@ class BookDTO
             isbn: $book->getIsbn(),
             description: $book->getDescription(),
             stock: $book->getStock(),
+            is_available: $book->isAvailable()
         );
     }
 
     public function toArray(): array
     {
-        return get_object_vars($this);
+        return [
+            'id'           => $this->id,
+            'title'        => $this->title,
+            'author'       => $this->author,
+            'isbn'         => $this->isbn,
+            'description'  => $this->description,
+            'genre'       => $this->genre,
+            'stock'        => $this->stock,
+            'is_available' => $this->is_available,
+        ];
     }
 }

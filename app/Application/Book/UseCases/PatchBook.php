@@ -4,7 +4,6 @@ namespace App\Application\Book\UseCases;
 
 use App\Application\Book\DTO\BookDTO;
 use App\Application\Book\DTO\PatchBookDTO;
-use App\Domain\Book\Entities\Book;
 use App\Domain\Book\Repositories\BookRepository;
 
 class PatchBook
@@ -22,24 +21,18 @@ class PatchBook
 
         $data = $bookDTO->data;
 
-        if (array_key_exists('title', $data)) {
-            $book->setTitle($data['title']);
-        }
+        $map = [
+            'title'  => 'setTitle',
+            'author' => 'setAuthor',
+            'isbn'   => 'setIsbn',
+            'genres' => 'setGenre',
+            'stock'  => 'setStock',
+        ];
 
-        if (array_key_exists('author', $data)) {
-            $book->setAuthor($data['author']);
-        }
-
-        if (array_key_exists('isbn', $data)) {
-            $book->setIsbn($data['isbn']);
-        }
-
-        if (array_key_exists('genres', $data)) {
-            $book->setGenre($data['genres']);
-        }
-
-        if (array_key_exists('stock', $data)) {
-            $book->setStock($data['stock']);
+        foreach ($map as $field => $setter) {
+            if (array_key_exists($field, $data)) {
+                $book->{$setter}($data[$field]);
+            }
         }
         $this->repository->save($book);
         return BookDTO::fromEntity($book);

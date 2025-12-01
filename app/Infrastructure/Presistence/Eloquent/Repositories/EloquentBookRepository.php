@@ -17,15 +17,10 @@ class EloquentBookRepository implements BookRepository
     public function findById(int $id): ?Book
     {
         $book = $this->model->newQuery()->find($id);
-        return new Book(
-            id: $book->id,
-            title: $book->title,
-            author: $book->author,
-            isbn: $book->isbn,
-            description: $book->description,
-            genres: $book->genres,
-            stock: $book->stock
-        );
+        if (!$book) {
+            return null;
+        }
+        return $this->toEntity($book);
     }
 
     public function findByIsbn(string $isbn): ?Book
@@ -33,15 +28,7 @@ class EloquentBookRepository implements BookRepository
         $book = $this->model->newQuery()
             ->where('isbn', $isbn)
             ->first();
-        return new Book(
-            id: $book->id,
-            title: $book->title,
-            author: $book->author,
-            isbn: $book->isbn,
-            description: $book->description,
-            genres: $book->genres,
-            stock: $book->stock
-        );
+        return $this->toEntity($book);
     }
 
     public function save(Book $book): ?Book
@@ -98,15 +85,7 @@ class EloquentBookRepository implements BookRepository
         $models = $orderQuery->paginate($request->get('perPage'));
         // map Eloquent → Domain Entity
         $mapped = $models->getCollection()->map(callback: function (BookModel $model) {
-            return new Book(
-                id: $model->id,
-                title: $model->title,
-                author: $model->author,
-                isbn: $model->isbn,
-                description: $model->description,
-                genres: $model->genres,
-                stock: $model->stock
-            );
+            return $this->toEntity($model);
         });
 
         // replace paginator collection with domain entities
@@ -118,5 +97,18 @@ class EloquentBookRepository implements BookRepository
     public function delete(int $id): ?bool
     {
         return  $this->model->query()->where('id',$id)->delete();
+    }
+
+    private function toEntity($model): Book
+    {
+        return new Book(
+            id: $model->id,
+            title: $model->title,
+            author: $model->author,
+            isbn: $model->isbn,
+            description: $model->description,
+            genres: $model->genres,
+            stock: $model->stock
+        );
     }
 }
