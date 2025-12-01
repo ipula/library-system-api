@@ -3,7 +3,9 @@
 namespace App\Infrastructure\Presistence\Eloquent\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -46,4 +48,17 @@ class UserModel extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function rentals(): HasMany
+    {
+        return $this->hasMany(BookRentalModel::class, 'user_id');
+    }
+
+    public function scopeHasActiveRental(Builder $query): Builder
+    {
+        return $query->whereHas('rentals', function (Builder $q) {
+            $q->where('progress', '<',100);
+        });
+    }
+
 }

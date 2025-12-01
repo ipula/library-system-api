@@ -4,6 +4,7 @@ namespace App\Infrastructure\Presistence\Eloquent\Repositories;
 
 use App\Domain\Book\Entities\Book;
 use App\Domain\Book\Repositories\BookRepository;
+use App\Domain\BookRental\Exceptions\BookHasActiveRentalsExceptionextends;
 use App\Infrastructure\Presistence\Eloquent\Models\BookModel;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -83,12 +84,9 @@ class EloquentBookRepository implements BookRepository
             $query->whereJsonContains('genres', $genre);
         }
         $models = $orderQuery->paginate($request->get('perPage'));
-        // map Eloquent → Domain Entity
         $mapped = $models->getCollection()->map(callback: function (BookModel $model) {
             return $this->toEntity($model);
         });
-
-        // replace paginator collection with domain entities
         $models->setCollection($mapped);
 
         return $models;
@@ -96,6 +94,14 @@ class EloquentBookRepository implements BookRepository
 
     public function delete(int $id): ?bool
     {
+        $hasActiveRental = $this->model->newQuery()
+            ->where('id', $id)
+            ->hasActiveRental()
+            ->exists();
+
+        if ($hasActiveRental) {
+            throw new BookHasActiveRentalsExceptionextends();
+        }
         return  $this->model->query()->where('id',$id)->delete();
     }
 

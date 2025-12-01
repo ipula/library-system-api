@@ -5,6 +5,7 @@ namespace App\Infrastructure\Providers;
 use App\Domain\Book\Repositories\BookRepository;
 use App\Domain\BookRental\Repositories\BookRentalRepository;
 use App\Domain\User\Repositories\UserRepository;
+use App\Infrastructure\Cache\CachedBookRepository;
 use App\Infrastructure\Presistence\Eloquent\Repositories\EloquentBookRentalRepository;
 use App\Infrastructure\Presistence\Eloquent\Repositories\EloquentBookRepository;
 use App\Infrastructure\Presistence\Eloquent\Repositories\EloquentUserRepository;
@@ -27,5 +28,9 @@ class DomainServiceProvider extends ServiceProvider
             BookRentalRepository::class,
             EloquentBookRentalRepository::class
         );
+        $this->app->bind(BookRepository::class, function ($app) {
+            $eloquentRepo = $app->make(EloquentBookRepository::class);
+            return new CachedBookRepository($eloquentRepo);
+        });
     }
 }

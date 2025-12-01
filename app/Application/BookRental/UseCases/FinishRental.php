@@ -28,10 +28,12 @@ class FinishRental
         if($rental->isFinished()){
             throw new RentalAlreadyFinishedException();
         }
+
         $rental->finish();
         $book = $this->bookRepository->findById($rental->getBookId());
         $book->increaseStock(1);
         $this->bookRepository->save($book);
+
         // update the rental entity
         $updatedRental = $this->bookRentalRepository->save($rental);
         $user = $this->userRepository->findById($rental->getUserId());

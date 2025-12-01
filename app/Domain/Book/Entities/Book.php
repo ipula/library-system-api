@@ -2,6 +2,9 @@
 
 namespace App\Domain\Book\Entities;
 
+use App\Domain\Book\Exceptions\InsufficientStockException;
+use App\Domain\Book\Exceptions\InvalidStockAmountException;
+
 class Book
 {
     public function __construct(
@@ -43,7 +46,7 @@ class Book
     public function increaseStock(int $amount): void
     {
         if ($amount < 0) {
-            throw new \DomainException('Increase amount must be positive.');
+            throw new InvalidStockAmountException('Increase amount must be positive.');
         }
 
         $this->stock += $amount;
@@ -52,11 +55,11 @@ class Book
     public function decreaseStock(int $amount): void
     {
         if ($amount < 0) {
-            throw new \DomainException('Decrease amount must be positive.');
+            throw new InvalidStockAmountException();
         }
 
         if ($this->stock - $amount < 0) {
-            throw new \DomainException('Not enough stock.');
+            throw new InsufficientStockException('Not enough stock.');
         }
 
         $this->stock -= $amount;
@@ -88,7 +91,7 @@ class Book
     }
     public function getAuthor(): string
     {
-        return $this->isbn;
+        return $this->author;
     }
     public function getStock(): int
     {

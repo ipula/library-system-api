@@ -14,7 +14,7 @@ class BookDTO
         public string $isbn,
         public ?string $description,
         public int $stock,
-        public bool $is_available,
+        public bool $isAvailable,
     ) {}
 
     public static function fromEntity(Book $book): self
@@ -27,7 +27,7 @@ class BookDTO
             isbn: $book->getIsbn(),
             description: $book->getDescription(),
             stock: $book->getStock(),
-            is_available: $book->isAvailable()
+            isAvailable: $book->isAvailable()
         );
     }
 
@@ -41,7 +41,7 @@ class BookDTO
             'description'  => $this->description,
             'genre'       => $this->genre,
             'stock'        => $this->stock,
-            'is_available' => $this->is_available,
+            'is_available' => $this->isAvailable,
         ];
     }
 }

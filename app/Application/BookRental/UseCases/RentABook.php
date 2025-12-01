@@ -31,14 +31,14 @@ class RentABook
         }
 
         #Decrease stock and save book
-        $book->decreaseStock($userId);
+        $book->decreaseStock(1);
         $this->bookRepository->save($book);
 
         $start = new \DateTimeImmutable();
         $dueDate   = $start->modify('+2 weeks');
 
         $rental = BookRental::create(
-            userId: 4,
+            userId: $userId,
             bookId: $bookId,
             startDate: $start,
             dueDate: $dueDate,
@@ -46,7 +46,7 @@ class RentABook
         // Create the rental entity and persist it
         $rental = $this->bookRentalRepository->save($rental);
 
-        $user= $this->userRepository->findById(4);
+        $user= $this->userRepository->findById($userId);
         $bookDto = BookDTO::fromEntity($book);
         $userDto = UserDTO::fromEntity($user);
 

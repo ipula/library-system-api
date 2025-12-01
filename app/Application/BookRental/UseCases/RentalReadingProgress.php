@@ -7,7 +7,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class RentalReadingProgress
 {
-
     public function __construct(
         private BookRentalRepository $rentalRepository,
     ) {}

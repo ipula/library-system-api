@@ -2,6 +2,9 @@
 
 namespace App\Domain\BookRental\Entities;
 
+use App\Domain\BookRental\Exceptions\BookRentalProgressException;
+use App\Domain\BookRental\Exceptions\ExtendedDateException;
+
 class BookRental
 {
     public function __construct(
@@ -36,7 +39,7 @@ class BookRental
     public function extend(\DateTimeImmutable $newDueDate): void
     {
         if ($newDueDate <= $this->dueDate) {
-            throw new \DomainException('New due date must be later than current due date.');
+            throw new ExtendedDateException();
         }
         $this->dueDate = $newDueDate;
     }
@@ -44,7 +47,7 @@ class BookRental
     public function updateProgress(float $percent): void
     {
         if ($percent < 0 || $percent > 100) {
-            throw new \DomainException('Progress must be between 0 and 100.');
+            throw new BookRentalProgressException();
         }
         if ($percent < $this->progressPercent) {
             return;
@@ -93,7 +96,7 @@ class BookRental
         return $this->endDate;
     }
 
-    public function getProgressPercent(): int
+    public function getProgressPercent(): float
     {
         return $this->progressPercent;
     }
