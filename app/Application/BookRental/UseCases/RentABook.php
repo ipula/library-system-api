@@ -20,7 +20,7 @@ class RentABook
         private UserRepository $userRepository
     ) {}
 
-    public function execute(int $bookId): ?BookRentalDTO
+    public function execute(int $userId,int $bookId): ?BookRentalDTO
     {
         $book = $this->bookRepository->findById($bookId);
         if(!$book){
@@ -31,7 +31,7 @@ class RentABook
         }
 
         #Decrease stock and save book
-        $book->decreaseStock(1);
+        $book->decreaseStock($userId);
         $this->bookRepository->save($book);
 
         $start = new \DateTimeImmutable();
@@ -46,7 +46,7 @@ class RentABook
         // Create the rental entity and persist it
         $rental = $this->bookRentalRepository->save($rental);
 
-        $user    = $this->userRepository->findById(4);
+        $user= $this->userRepository->findById(4);
         $bookDto = BookDTO::fromEntity($book);
         $userDto = UserDTO::fromEntity($user);
 

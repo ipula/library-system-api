@@ -82,7 +82,8 @@ class BookRentalController extends Controller
         $data = $request->validate([
             'book_id' => 'required|integer',
         ]);
-        $rentalDTO = $this->rentABook->execute($data['book_id']);
+        $userId = $request->user()->id;
+        $rentalDTO = $this->rentABook->execute($userId,$data['book_id']);
         return response()->json([
             'data'    => $rentalDTO->toArray(),
             'message' => 'Book rented successfully',
