@@ -19,9 +19,9 @@ class GetBookByIdTest extends TestCase
         // Create a domain Book entity (adapt to your constructor if needed)
         $book = Book::create(
             title: 'Test Book',
-            author: 'Author Name',
+            author: 'Test Author',
             isbn: '1234567890',
-            description: 'Nice book',
+            description: 'Test Description',
             genres: ['fantasy', 'action'],
             stock: 5,
         );
@@ -40,7 +40,7 @@ class GetBookByIdTest extends TestCase
 
         $this->assertSame($bookId, $result->id);
         $this->assertSame('Test Book', $result->title);
-        $this->assertSame('Author Name', $result->author );
+        $this->assertSame('Test Author', $result->author );
     }
 
     public function testReturnsNullWhenBookNotFound()

@@ -21,7 +21,7 @@ class CreateBook
             isbn: $request->isbn,
             description: $request->description,
             genres: $request->genre,
-            stock: $request->stock, // 👈 pass stock to domain
+            stock: $request->stock,
         );
 
         $this->repository->save($book);
