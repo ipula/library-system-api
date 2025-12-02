@@ -59,7 +59,7 @@ class EloquentBookRepository implements BookRepository
         $sortBy = $request->get('sortBy') ? $request->get('sortBy') : 'id';
         $orderBy = $request->get('orderBy') ? $request->get('orderBy') : 'asc';
         $genre = $request->get('genre') ? $request->get('genre') : null;
-        $search = $request->get('search') ? $request->get('search') : null;
+        $search = $request->get('search') ? strtolower($request->get('search')) : null;
 
         if ($search !== null && $search !== '') {
             $query->where(function ($q) use ($search) {

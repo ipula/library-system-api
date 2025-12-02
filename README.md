@@ -229,3 +229,11 @@ Unit Testing
 - [Link 1](https://ondrej-popelka.medium.com/fixture-testing-in-phpunit-90bd52fa77be)
 - [Link 2](https://laravel.com/docs/12.x/testing)
 
+### Entity Relationship Diagram
+
+![ERD](./docs/library-system-erd.jpg)
+
+### Postman Collection
+
+- [Collection](./docs/Library-system.postman_collection.json)
+- [Collection ENV](./docs/Library-system.postman_environment.json)

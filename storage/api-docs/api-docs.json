@@ -5,14 +5,182 @@
         "description": "API documentation for the library system",
         "version": "1.0.0"
     },
+    "servers": [
+        {
+            "url": "http://localhost:8000/api"
+        }
+    ],
     "paths": {
+        "/api/v1/books": {},
+        "/v1/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login and get API token",
+                "operationId": "39ee901a15061740ca7c8462f6bafd5c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful, token returned"
+                    },
+                    "401": {
+                        "description": "Invalid credentials"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/v1/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout (revoke current token)",
+                "operationId": "c20377adbdbe7ddeb3961584907be947",
+                "responses": {
+                    "200": {
+                        "description": "Logged out successfully"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/v1/forgotPassword": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Request password reset email",
+                "description": "Send a password reset link to the user's email.",
+                "operationId": "b059cfeb34f92f1a0e2da24d6f06c2cd",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Reset link sent"
+                    },
+                    "400": {
+                        "description": "Unable to send reset link"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/v1/resetPassword": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Reset password using token",
+                "description": "Resets the user's password using the token received by email.",
+                "operationId": "2fb7efc1b0079ba94d0b183890f7dab6",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "token",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "token": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "minLength": 6
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "minLength": 6
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password reset successfully"
+                    },
+                    "400": {
+                        "description": "Reset failed or invalid token"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
         "/v1/books": {
             "get": {
                 "tags": [
                     "Books"
                 ],
                 "summary": "List books",
-                "operationId": "8118ce8e5b6eb732d790a45da5b0abac",
+                "operationId": "b92f139d0d09267d2519d28c26c0d833",
                 "parameters": [
                     {
                         "name": "page",
@@ -61,7 +229,7 @@
                     "Books"
                 ],
                 "summary": "Create a book",
-                "operationId": "da7e4027947c520fbd5b051632354fe9",
+                "operationId": "a5dd5e903c811205131608d3034a1b51",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -120,63 +288,26 @@
                 ]
             }
         },
-        "/v1/login": {
-            "post": {
+        "/v1/books/{id}": {
+            "get": {
                 "tags": [
-                    "Auth"
+                    "Books"
                 ],
-                "summary": "Login and get API token",
-                "operationId": "6e425b9ee3760566a58972c47caf3349",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "email",
-                                    "password"
-                                ],
-                                "properties": {
-                                    "email": {
-                                        "type": "string",
-                                        "format": "email"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "format": "password"
-                                    }
-                                },
-                                "type": "object"
-                            }
+                "summary": "fetch a book by id",
+                "operationId": "a2f9f7b174bc13f4ae31c0beabd8db10",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
                         }
                     }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Login successful, token returned"
-                    },
-                    "401": {
-                        "description": "Invalid credentials"
-                    },
-                    "422": {
-                        "description": "Validation error"
-                    }
-                }
-            }
-        },
-        "/v1/logout": {
-            "post": {
-                "tags": [
-                    "Auth"
                 ],
-                "summary": "Logout (revoke current token)",
-                "operationId": "17b0f36180373371aee5089d54ff9599",
                 "responses": {
                     "200": {
-                        "description": "Logged out successfully"
-                    },
-                    "401": {
-                        "description": "Unauthenticated"
+                        "description": "OK"
                     }
                 },
                 "security": [
@@ -184,123 +315,13 @@
                         "sanctum": []
                     }
                 ]
-            }
-        },
-        "/v1/forgotPassword": {
-            "post": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Request password reset email",
-                "description": "Send a password reset link to the user's email.",
-                "operationId": "8e749942f0fc1bb55bb0349d10330aed",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "email"
-                                ],
-                                "properties": {
-                                    "email": {
-                                        "type": "string",
-                                        "format": "email"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Reset link sent"
-                    },
-                    "400": {
-                        "description": "Unable to send reset link"
-                    },
-                    "422": {
-                        "description": "Validation error"
-                    }
-                }
-            }
-        },
-        "/v1/resetPassword": {
-            "post": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Reset password using token",
-                "description": "Resets the user's password using the token received by email.",
-                "operationId": "cd61705dff935441adc2d8228ea69df1",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "email",
-                                    "token",
-                                    "password",
-                                    "password_confirmation"
-                                ],
-                                "properties": {
-                                    "email": {
-                                        "type": "string",
-                                        "format": "email"
-                                    },
-                                    "token": {
-                                        "type": "string"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "format": "password",
-                                        "minLength": 6
-                                    },
-                                    "password_confirmation": {
-                                        "type": "string",
-                                        "format": "password",
-                                        "minLength": 6
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Password reset successfully"
-                    },
-                    "400": {
-                        "description": "Reset failed or invalid token"
-                    },
-                    "422": {
-                        "description": "Validation error"
-                    }
-                }
-            }
-        },
-        "/v1/books/{id}": {
-            "get": {
-                "tags": [
-                    "Books"
-                ],
-                "summary": "fetch a book by id",
-                "operationId": "264ab016b16d928dad55bcab083e4da9",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
             },
             "delete": {
                 "tags": [
                     "Books"
                 ],
                 "summary": "Delete a book",
-                "operationId": "a04e491c084681753b711e143feee232",
+                "operationId": "42412914f8715446d55c0dbe5517f73d",
                 "parameters": [
                     {
                         "name": "id",
@@ -330,7 +351,7 @@
                     "Books"
                 ],
                 "summary": "Update a book",
-                "operationId": "e98f9fe2bc59f33ee7ccc4caeab61d34",
+                "operationId": "2995f2c6b9bebfb492822d8cd5e6913a",
                 "parameters": [
                     {
                         "name": "id",
@@ -342,7 +363,7 @@
                     }
                 ],
                 "requestBody": {
-                    "required": true,
+                    "required": false,
                     "content": {
                         "application/json": {
                             "schema": {
@@ -399,7 +420,7 @@
                     "Rentals"
                 ],
                 "summary": "Get reading progress for a rental",
-                "operationId": "a3dbc70ea464fd84e9d2877c5d579838",
+                "operationId": "67ca91bc5d6860e3f080734245284243",
                 "parameters": [
                     {
                         "name": "rentalId",
@@ -434,7 +455,7 @@
                     "Rentals"
                 ],
                 "summary": "Rent a book",
-                "operationId": "59a2f1e4cb5340d9387025af2e509b11",
+                "operationId": "797c1527f3ec524eff734908e513b05f",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -477,7 +498,7 @@
                     "Rentals"
                 ],
                 "summary": "Extend a rental",
-                "operationId": "b9ad6d228149c1eee013989dde4df6fe",
+                "operationId": "c9b005fd5678a08d2167a402eb8be58b",
                 "parameters": [
                     {
                         "name": "rentalId",
@@ -534,7 +555,7 @@
                     "Rentals"
                 ],
                 "summary": "Update reading progress",
-                "operationId": "c6d40ada9af88299570401b475f77822",
+                "operationId": "c603554dd3be64f9700efaa6b1388448",
                 "parameters": [
                     {
                         "name": "rentalId",
@@ -589,7 +610,7 @@
                     "Rentals"
                 ],
                 "summary": "Finish a rental",
-                "operationId": "b13797d1460b18309787c18b2aa33c7c",
+                "operationId": "9299170268965e6b06d0d3343a8bca73",
                 "parameters": [
                     {
                         "name": "rentalId",
@@ -627,7 +648,7 @@
                     "Users"
                 ],
                 "summary": "List users",
-                "operationId": "0bee31bcb666f23c2236970359569ff3",
+                "operationId": "21cc9cf1e7535d8270d4c07fb8e4c585",
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -648,7 +669,7 @@
                 ],
                 "summary": "Create a user",
                 "description": "Public endpoint to create a user account.",
-                "operationId": "b17aa14793d5d94e0ee14393a2e681c8",
+                "operationId": "9567565ebcc95d8f23d7408db0e96419",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -694,7 +715,7 @@
                     "Users"
                 ],
                 "summary": "Get a single user",
-                "operationId": "4d719530ad9a28b6663c4c44d67725eb",
+                "operationId": "dc86b4d9e384ed69d2cd2e049877225d",
                 "parameters": [
                     {
                         "name": "id",
@@ -727,7 +748,7 @@
                     "Users"
                 ],
                 "summary": "Delete a user",
-                "operationId": "4140d2a413147d64b238b5bfaa4ebcfe",
+                "operationId": "a69e8f336087cf2539d62f6d895a376f",
                 "parameters": [
                     {
                         "name": "id",
@@ -760,7 +781,7 @@
                     "Users"
                 ],
                 "summary": "Update a user",
-                "operationId": "62aa1f15209dc4f88f0db1e94daef5b9",
+                "operationId": "b26da84831199e7037e50400c5125434",
                 "parameters": [
                     {
                         "name": "id",

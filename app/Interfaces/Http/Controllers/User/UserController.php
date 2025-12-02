@@ -144,26 +144,18 @@ class UserController extends Controller
      * )
      */
     public function update(UpdateUserRequest $request,int $id){
-        try {
-            $dto = new PatchUserDTO(
-                id: $id,
-                data: $request->validated()
-            );
-            $user= $this->updateUser->execute($dto);
-            if (!$user) {
-                return response()->json(['message' => 'user not found'], Response::HTTP_NOT_FOUND);
-            }
-            return response()->json([
-                'data' => $user,
-                'message' => 'user updated successfully'
-            ], Response::HTTP_CREATED);
-
-        } catch (\InvalidArgumentException $e) {
-            return response()->json([
-                'error' => 'Validation Error',
-                'message' => $e->getMessage()
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        $dto = new PatchUserDTO(
+            id: $id,
+            data: $request->validated()
+        );
+        $user= $this->updateUser->execute($dto);
+        if (!$user) {
+            return response()->json(['message' => 'user not found'], Response::HTTP_NOT_FOUND);
         }
+        return response()->json([
+            'data' => $user,
+            'message' => 'user updated successfully'
+        ], Response::HTTP_CREATED);
     }
     /**
      * @OA\Delete(
@@ -183,20 +175,12 @@ class UserController extends Controller
      * )
      */
     public function destroy(int $id){
-        try {
-            $user = $this->deleteUser->execute($id);
-            if (!$user) {
-                return response()->json(['message' => 'user not found'], Response::HTTP_NOT_FOUND);
-            }
-            return response()->json([
-                'message' => 'user deleted successfully'
-            ], Response::HTTP_CREATED);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Server Error',
-                'message' => $e->getMessage()
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        $user = $this->deleteUser->execute($id);
+        if (!$user) {
+            return response()->json(['message' => 'user not found'], Response::HTTP_NOT_FOUND);
         }
+        return response()->json([
+            'message' => 'user deleted successfully'
+        ], Response::HTTP_CREATED);
     }
 }

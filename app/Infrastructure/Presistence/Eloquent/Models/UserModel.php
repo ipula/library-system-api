@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Presistence\Eloquent\Models;
 
+use Database\Factories\UserModelFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -13,6 +14,10 @@ use Laravel\Sanctum\HasApiTokens;
 class UserModel extends Authenticatable
 {
     use HasFactory, Notifiable, SoftDeletes, HasApiTokens;
+    protected static function newFactory()
+    {
+        return UserModelFactory::new();
+    }
     protected $table = 'users';
 
     /**

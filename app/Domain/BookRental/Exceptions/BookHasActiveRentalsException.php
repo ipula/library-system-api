@@ -4,7 +4,7 @@ namespace App\Domain\BookRental\Exceptions;
 
 use App\Domain\Shared\Exceptions\DomainException;
 
-class BookHasActiveRentalsExceptionextends extends DomainException
+class BookHasActiveRentalsException extends DomainException
 {
     public function __construct(
         string $message = 'Book has active rentals and cannot be deleted.'

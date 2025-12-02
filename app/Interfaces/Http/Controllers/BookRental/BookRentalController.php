@@ -120,32 +120,12 @@ class BookRentalController extends Controller
         $data = $request->validate([
             'extendedDate' => 'required|date',
         ]);
-        try {
-            $extendedDate = new \DateTimeImmutable($data['extendedDate']);
-            $rentalDTO = $this->extendRental->execute($rentalId,$extendedDate);
-            return response()->json([
-                'data'    => $rentalDTO->toArray(),
-                'message' => 'Book rent extended successfully',
-            ], Response::HTTP_CREATED);
-
-        } catch (NotFoundHttpException $e) {
-            return response()->json([
-                'error'   => 'Not Found',
-                'message' => $e->getMessage(),
-            ], Response::HTTP_NOT_FOUND);
-
-        } catch (\DomainException $e) {
-            return response()->json([
-                'error'   => 'Domain Error',
-                'message' => $e->getMessage(),
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
-
-        } catch (\Throwable $e) {
-            return response()->json([
-                'error'   => 'Server Error',
-                'message' => 'Something went wrong.',
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        $extendedDate = new \DateTimeImmutable($data['extendedDate']);
+        $rentalDTO = $this->extendRental->execute($rentalId,$extendedDate);
+        return response()->json([
+            'data'    => $rentalDTO->toArray(),
+            'message' => 'Book rent extended successfully',
+        ], Response::HTTP_CREATED);
     }
 
     /**
@@ -177,31 +157,11 @@ class BookRentalController extends Controller
         $data = $request->validate([
             'progress' => 'required|decimal:2',
         ]);
-        try {
-            $rentalDTO = $this->updateProgress->execute($rentalId,$data['progress']);
-            return response()->json([
-                'data'    => $rentalDTO->toArray(),
-                'message' => 'Book rent extended successfully',
-            ], Response::HTTP_CREATED);
-
-        } catch (NotFoundHttpException $e) {
-            return response()->json([
-                'error'   => 'Not Found',
-                'message' => $e->getMessage(),
-            ], Response::HTTP_NOT_FOUND);
-
-        } catch (\DomainException $e) {
-            return response()->json([
-                'error'   => 'Domain Error',
-                'message' => $e->getMessage(),
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
-
-        } catch (\Throwable $e) {
-            return response()->json([
-                'error'   => 'Server Error',
-                'message' => 'Something went wrong.',
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        $rentalDTO = $this->updateProgress->execute($rentalId,$data['progress']);
+        return response()->json([
+            'data'    => $rentalDTO->toArray(),
+            'message' => 'Book rent extended successfully',
+        ], Response::HTTP_CREATED);
     }
 
     /**
@@ -224,30 +184,10 @@ class BookRentalController extends Controller
      */
     public function finishRental(PatchBook $request,int $rentalId): \Illuminate\Http\JsonResponse
     {
-        try {
-            $rentalDTO = $this->finishRental->execute($rentalId);
-            return response()->json([
-                'data'    => $rentalDTO->toArray(),
-                'message' => 'Book rent extended successfully',
-            ], Response::HTTP_CREATED);
-
-        } catch (NotFoundHttpException $e) {
-            return response()->json([
-                'error'   => 'Not Found',
-                'message' => $e->getMessage(),
-            ], Response::HTTP_NOT_FOUND);
-
-        } catch (\DomainException $e) {
-            return response()->json([
-                'error'   => 'Domain Error',
-                'message' => $e->getMessage(),
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
-
-        } catch (\Throwable $e) {
-            return response()->json([
-                'error'   => 'Server Error',
-                'message' => 'Something went wrong.',
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        $rentalDTO = $this->finishRental->execute($rentalId);
+        return response()->json([
+            'data'    => $rentalDTO->toArray(),
+            'message' => 'Book rent extended successfully',
+        ], Response::HTTP_CREATED);
     }
 }

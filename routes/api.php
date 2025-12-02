@@ -7,7 +7,7 @@ use App\Interfaces\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
-    Route::post('login', [AuthController::class, 'login']);
+    Route::middleware('throttle:login')->post('login', [AuthController::class, 'login']);
     Route::post('forgotPassword', [AuthController::class, 'forgotPassword']);
     Route::get('/resetPassword/{token}', function ($token) {
         return response()->json([

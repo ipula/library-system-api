@@ -18,7 +18,7 @@ use OpenApi\Annotations as OA;
 
 /**
  * @OA\PathItem(
- *     path="/v1/books"
+ *     path="/api/v1/books"
  * )
  */
 class BookController extends Controller
@@ -60,7 +60,8 @@ class BookController extends Controller
      *     path="/v1/books/{id}",
      *     tags={"Books"},
      *     summary="fetch a book by id",
-     *
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
      *     @OA\Response(response=200, description="OK")
      * )
      */
@@ -160,7 +161,7 @@ class BookController extends Controller
      *     security={{"sanctum": {}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
      *     @OA\RequestBody(
-     *         required=true,
+     *         required=false,
      *         @OA\JsonContent(
      *             @OA\Property(property="title", type="string"),
      *             @OA\Property(property="author", type="string"),

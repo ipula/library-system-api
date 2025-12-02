@@ -3,16 +3,10 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Throwable;
+use Illuminate\Validation\ValidationException;
 
 class Handler extends ExceptionHandler
 {
-    protected $dontFlash = [
-        'current_password',
-        'password',
-        'password_confirmation',
-    ];
-
     public function register(): void
     {
         $this->renderable(function (\App\Domain\Shared\Exceptions\DomainException $e, $request) {
@@ -27,6 +21,14 @@ class Handler extends ExceptionHandler
                 'error' => 'Unauthenticated',
                 'message' => 'Token is missing or invalid.',
             ], 401);
+        });
+
+        $this->renderable(function (ValidationException $e, $request) {
+                return response()->json([
+                    'error' => 'Validation Error',
+                    'message' => $e->getMessage(),
+                    'errors' => $e->errors(),
+                ], 422);
         });
     }
 }
