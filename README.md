@@ -212,3 +212,20 @@ Pros:
 
 - Simple, easy developments.
 - Recommended By Laravel 
+
+### References
+
+Domain-Driven Design 
+- [link 1](https://dev.to/blamsa0mine/building-a-scalable-laravel-application-with-domain-driven-design-ddd-42j6)
+- [link 2](https://medium.com/@harryespant/implementing-domain-driven-architecture-in-laravel-setup-advantages-and-practical-use-cases-5eac6dfeffaa)
+
+Cashing
+
+- [link 1](https://medium.com/@zulfikarditya/advanced-laravel-caching-techniques-with-redis-299ab43e09dd)
+- [link 2](https://laravel.com/docs/12.x/redis)
+
+Unit Testing
+
+- [Link 1](https://ondrej-popelka.medium.com/fixture-testing-in-phpunit-90bd52fa77be)
+- [Link 2](https://laravel.com/docs/12.x/testing)
+
