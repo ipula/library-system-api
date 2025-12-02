@@ -19,16 +19,17 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  *     description="Book rental management"
  * )
  */
-
 class BookRentalController extends Controller
 {
     public function __construct(
-        private RentABook $rentABook,
-        private ExtendRental $extendRental,
-        private UpdateProgress $updateProgress,
-        private FinishRental $finishRental,
+        private RentABook             $rentABook,
+        private ExtendRental          $extendRental,
+        private UpdateProgress        $updateProgress,
+        private FinishRental          $finishRental,
         private RentalReadingProgress $getReadingProgress,
-    ){}
+    )
+    {
+    }
 
     /**
      * @OA\Get(
@@ -54,7 +55,7 @@ class BookRentalController extends Controller
         return response()->json([
             'data' => [
                 'rental_id' => $rentalId,
-                'progress'  => $progress,
+                'progress' => $progress,
             ],
         ], 200);
     }
@@ -83,9 +84,9 @@ class BookRentalController extends Controller
             'book_id' => 'required|integer',
         ]);
         $userId = $request->user()->id;
-        $rentalDTO = $this->rentABook->execute($userId,$data['book_id']);
+        $rentalDTO = $this->rentABook->execute($userId, $data['book_id']);
         return response()->json([
-            'data'    => $rentalDTO->toArray(),
+            'data' => $rentalDTO->toArray(),
             'message' => 'Book rented successfully',
         ], Response::HTTP_CREATED);
     }
@@ -115,15 +116,15 @@ class BookRentalController extends Controller
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function extendRental(Request $request,int $rentalId): \Illuminate\Http\JsonResponse
+    public function extendRental(Request $request, int $rentalId): \Illuminate\Http\JsonResponse
     {
         $data = $request->validate([
             'extendedDate' => 'required|date',
         ]);
         $extendedDate = new \DateTimeImmutable($data['extendedDate']);
-        $rentalDTO = $this->extendRental->execute($rentalId,$extendedDate);
+        $rentalDTO = $this->extendRental->execute($rentalId, $extendedDate);
         return response()->json([
-            'data'    => $rentalDTO->toArray(),
+            'data' => $rentalDTO->toArray(),
             'message' => 'Book rent extended successfully',
         ], Response::HTTP_CREATED);
     }
@@ -152,14 +153,14 @@ class BookRentalController extends Controller
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function updateProgress(Request $request,int $rentalId): \Illuminate\Http\JsonResponse
+    public function updateProgress(Request $request, int $rentalId): \Illuminate\Http\JsonResponse
     {
         $data = $request->validate([
             'progress' => 'required|decimal:2',
         ]);
-        $rentalDTO = $this->updateProgress->execute($rentalId,$data['progress']);
+        $rentalDTO = $this->updateProgress->execute($rentalId, $data['progress']);
         return response()->json([
-            'data'    => $rentalDTO->toArray(),
+            'data' => $rentalDTO->toArray(),
             'message' => 'Book rent extended successfully',
         ], Response::HTTP_CREATED);
     }
@@ -182,11 +183,11 @@ class BookRentalController extends Controller
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function finishRental(PatchBook $request,int $rentalId): \Illuminate\Http\JsonResponse
+    public function finishRental(PatchBook $request, int $rentalId): \Illuminate\Http\JsonResponse
     {
         $rentalDTO = $this->finishRental->execute($rentalId);
         return response()->json([
-            'data'    => $rentalDTO->toArray(),
+            'data' => $rentalDTO->toArray(),
             'message' => 'Book rent extended successfully',
         ], Response::HTTP_CREATED);
     }

@@ -29,9 +29,11 @@ class UserController extends Controller
         private DeleteUser   $deleteUser,
         private UpdateUser   $updateUser,
         private GetUserById  $getUserById,
-    ){
+    )
+    {
 
     }
+
     /**
      * @OA\Get(
      *     path="/v1/users",
@@ -42,7 +44,8 @@ class UserController extends Controller
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function index(Request $request){
+    public function index(Request $request)
+    {
         $users = $this->fetchUser->getAll($request);
         return response()->json([
             'data' => $users->toArray()
@@ -66,8 +69,9 @@ class UserController extends Controller
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function show(int $id){
-        $user= $this->getUserById->execute($id);
+    public function show(int $id)
+    {
+        $user = $this->getUserById->execute($id);
         if (!$user) {
             return response()->json(['message' => 'user not found'], Response::HTTP_NOT_FOUND);
         }
@@ -95,28 +99,22 @@ class UserController extends Controller
      *     @OA\Response(response=422, description="Validation error")
      * )
      */
-    public function store(RegisterUserRequest $request){
-        try {
-            $input = new RegisterUserInput(
-                name: $request->input('name'),
-                email: $request->input('email'),
-                password: $request->input('password'),
-            );
+    public function store(RegisterUserRequest $request)
+    {
+        $input = new RegisterUserInput(
+            name: $request->input('name'),
+            email: $request->input('email'),
+            password: $request->input('password'),
+        );
 
-            $userDTO = $this->registerUser->execute($input);
+        $userDTO = $this->registerUser->execute($input);
 
-            return response()->json([
-                'data' => $userDTO->toArray(),
-                'message' => 'user registered successfully'
-            ], Response::HTTP_CREATED);
-
-        } catch (\InvalidArgumentException $e) {
-            return response()->json([
-                'error' => 'Validation Error',
-                'message' => $e->getMessage()
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
+        return response()->json([
+            'data' => $userDTO->toArray(),
+            'message' => 'user registered successfully'
+        ], Response::HTTP_CREATED);
     }
+
     /**
      * @OA\Patch(
      *     path="/v1/users/{id}",
@@ -143,12 +141,13 @@ class UserController extends Controller
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function update(UpdateUserRequest $request,int $id){
+    public function update(UpdateUserRequest $request, int $id)
+    {
         $dto = new PatchUserDTO(
             id: $id,
             data: $request->validated()
         );
-        $user= $this->updateUser->execute($dto);
+        $user = $this->updateUser->execute($dto);
         if (!$user) {
             return response()->json(['message' => 'user not found'], Response::HTTP_NOT_FOUND);
         }
@@ -157,6 +156,7 @@ class UserController extends Controller
             'message' => 'user updated successfully'
         ], Response::HTTP_CREATED);
     }
+
     /**
      * @OA\Delete(
      *     path="/v1/users/{id}",
@@ -174,7 +174,8 @@ class UserController extends Controller
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function destroy(int $id){
+    public function destroy(int $id)
+    {
         $user = $this->deleteUser->execute($id);
         if (!$user) {
             return response()->json(['message' => 'user not found'], Response::HTTP_NOT_FOUND);

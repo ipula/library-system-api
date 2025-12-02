@@ -42,24 +42,17 @@ return Application::configure(basePath: dirname(__DIR__))
                 'message' => 'Email or password is incorrect.',
             ], 401);
         });
-
-        $exceptions->renderable(function ( $e, $request) {
-            return response()->json([
-                'error' => 'Invalid credentials',
-                'message' => 'Email or password is incorrect.',
-            ], 401);
-        });
         $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, $request) {
                 return response()->json([
                     'error' => 'NotFound',
                     'message' => $e->getMessage() ?: 'Resource not found',
                 ], 404);
         });
-        $exceptions->render(function (Throwable $e, $request) {
-                report($e);
-                return response()->json([
-                    'error' => 'ServerError',
-                    'message' => 'Something went wrong.',
-                ], 500);
-        });
+//        $exceptions->render(function (Throwable $e, $request) {
+//                report($e);
+//                return response()->json([
+//                    'error' => 'ServerError',
+//                    'message' => 'Something went wrong.',
+//                ], 500);
+//        });
     })->create();

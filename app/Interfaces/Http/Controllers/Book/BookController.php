@@ -24,12 +24,13 @@ use OpenApi\Annotations as OA;
 class BookController extends Controller
 {
     public function __construct(
-        private CreateBook $createBook,
+        private CreateBook  $createBook,
         private GetAllBooks $getAllBooks,
-        private PatchBook $patchBook,
-        private DeleteBook $deleteBook,
-        private GetBookById  $getBookById,
-    ){
+        private PatchBook   $patchBook,
+        private DeleteBook  $deleteBook,
+        private GetBookById $getBookById,
+    )
+    {
 
     }
 
@@ -48,7 +49,8 @@ class BookController extends Controller
      *     @OA\Response(response=200, description="OK")
      * )
      */
-    public function index(Request $request){
+    public function index(Request $request)
+    {
         $bookDTO = $this->getAllBooks->getAll($request);
         return response()->json([
             'data' => $bookDTO->toArray()
@@ -65,7 +67,8 @@ class BookController extends Controller
      *     @OA\Response(response=200, description="OK")
      * )
      */
-    public function show(int $id){
+    public function show(int $id)
+    {
         $book = $this->getBookById->execute($id);
         if (!$book) {
             return response()->json(['message' => 'Book not found'], Response::HTTP_NOT_FOUND);
@@ -98,30 +101,24 @@ class BookController extends Controller
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function store(CreateBookRequest $request){
-        try {
-            $input = new CreateBookInput(
-                title: $request->validated('title'),
-                author: $request->validated('author'),
-                genre: $request->validated('genres'),
-                isbn: $request->validated('isbn'),
-                description: $request->validated('description'),
-                stock: $request->validated('stock'),
-            );
+    public function store(CreateBookRequest $request)
+    {
 
-            $bookDTO = $this->createBook->execute($input);
+        $input = new CreateBookInput(
+            title: $request->validated('title'),
+            author: $request->validated('author'),
+            genre: $request->validated('genres'),
+            isbn: $request->validated('isbn'),
+            description: $request->validated('description'),
+            stock: $request->validated('stock'),
+        );
 
-            return response()->json([
-                'data' => $bookDTO->toArray(),
-                'message' => 'book created successfully'
-            ], Response::HTTP_CREATED);
+        $bookDTO = $this->createBook->execute($input);
 
-        } catch (\InvalidArgumentException $e) {
-            return response()->json([
-                'error' => 'Validation Error',
-                'message' => $e->getMessage()
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
+        return response()->json([
+            'data' => $bookDTO->toArray(),
+            'message' => 'book created successfully'
+        ], Response::HTTP_CREATED);
     }
 
     /**
@@ -135,22 +132,17 @@ class BookController extends Controller
      *     @OA\Response(response=404, description="Not found")
      * )
      */
-    public function destroy(int $id){
-        try {
-            $book = $this->deleteBook->execute($id);
-            if (!$book) {
-                return response()->json(['message' => 'Book not found'], Response::HTTP_NOT_FOUND);
-            }
-            return response()->json([
-                'message' => 'book deleted successfully'
-            ], Response::HTTP_CREATED);
+    public function destroy(int $id)
+    {
 
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Server Error',
-                'message' => $e->getMessage()
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        $book = $this->deleteBook->execute($id);
+        if (!$book) {
+            return response()->json(['message' => 'Book not found'], Response::HTTP_NOT_FOUND);
         }
+        return response()->json([
+            'message' => 'book deleted successfully'
+        ], Response::HTTP_CREATED);
+
     }
 
     /**
@@ -176,26 +168,21 @@ class BookController extends Controller
      *     @OA\Response(response=422, description="Validation error")
      * )
      */
-    public function update(PatchBookRequest $request, int $id){
-        try {
-            $dto = new PatchBookDTO(
-                id: $id,
-                data: $request->validated()
-            );
-            $bookDTO = $this->patchBook->execute($dto);
-            if (!$bookDTO) {
-                return response()->json(['message' => 'Book not found'], Response::HTTP_NOT_FOUND);
-            }
-            return response()->json([
-                'data' => $bookDTO,
-                'message' => 'book updated successfully'
-            ], Response::HTTP_CREATED);
+    public function update(PatchBookRequest $request, int $id)
+    {
 
-        } catch (\InvalidArgumentException $e) {
-            return response()->json([
-                'error' => 'Validation Error',
-                'message' => $e->getMessage()
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        $dto = new PatchBookDTO(
+            id: $id,
+            data: $request->validated()
+        );
+        $bookDTO = $this->patchBook->execute($dto);
+        if (!$bookDTO) {
+            return response()->json(['message' => 'Book not found'], Response::HTTP_NOT_FOUND);
         }
+        return response()->json([
+            'data' => $bookDTO,
+            'message' => 'book updated successfully'
+        ], Response::HTTP_CREATED);
+
     }
 }
