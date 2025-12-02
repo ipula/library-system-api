@@ -42,17 +42,24 @@ return Application::configure(basePath: dirname(__DIR__))
                 'message' => 'Email or password is incorrect.',
             ], 401);
         });
-        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, $request) {
+        $exceptions->renderable(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, $request) {
                 return response()->json([
                     'error' => 'NotFound',
                     'message' => $e->getMessage() ?: 'Resource not found',
                 ], 404);
         });
-//        $exceptions->render(function (Throwable $e, $request) {
-//                report($e);
-//                return response()->json([
-//                    'error' => 'ServerError',
-//                    'message' => 'Something went wrong.',
-//                ], 500);
-//        });
+        $exceptions->renderable(function (\Illuminate\Http\Exceptions\ThrottleRequestsException $e, $request) {
+                $headers = $e->getHeaders();
+                return response()->json([
+                    'error'   => 'TooManyRequests',
+                    'message' => 'Too many attempts. Try again later.',
+                ], 429, $headers);
+        });
+        $exceptions->render(function (Throwable $e, $request) {
+                report($e);
+                return response()->json([
+                    'error' => 'ServerError',
+                    'message' => 'Something went wrong.',
+                ], 500);
+        });
     })->create();
