@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\BookRental;
+namespace App\Interfaces\Http\Controllers\BookRental;
 
 use App\Application\Book\UseCases\PatchBook;
 use App\Application\BookRental\UseCases\ExtendRental;
@@ -8,7 +8,7 @@ use App\Application\BookRental\UseCases\FinishRental;
 use App\Application\BookRental\UseCases\RentABook;
 use App\Application\BookRental\UseCases\RentalReadingProgress;
 use App\Application\BookRental\UseCases\UpdateProgress;
-use App\Http\Controllers\Controller;
+use App\Interfaces\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;

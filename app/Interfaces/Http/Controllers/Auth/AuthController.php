@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Interfaces\Http\Controllers\Auth;
 
 use App\Application\Auth\DTO\LoginUserDTO;
 use App\Application\Auth\DTO\ResetPasswordDTO;
 use App\Application\Auth\UseCases\LoginUser;
 use App\Application\Auth\UseCases\RequestPasswordReset;
 use App\Application\Auth\UseCases\ResetPassword;
-use App\Http\Controllers\Controller;
+use App\Interfaces\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 

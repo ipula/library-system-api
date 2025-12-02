@@ -1,9 +1,9 @@
 <?php
 
-use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\Book\BookController;
-use App\Http\Controllers\BookRental\BookRentalController;
-use App\Http\Controllers\User\UserController;
+use App\Interfaces\Http\Controllers\Auth\AuthController;
+use App\Interfaces\Http\Controllers\Book\BookController;
+use App\Interfaces\Http\Controllers\BookRental\BookRentalController;
+use App\Interfaces\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {

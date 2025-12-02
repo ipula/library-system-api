@@ -1,59 +1,214 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## Library API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A small API-only Laravel application for managing a library system using a DDD-style architecture, Sanctum authentication, and Redis-backed caching for read-heavy operations.
 
-## About Laravel
+## Setup Instructions
+### 1. Requirements
+  - **PHP 8.2 +**
+  - **Composer**
+  - **MySQL**
+  - **Redis for caching**
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### 2. Clone and Install dependencies
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+```bash
+git clone https://github.com/ipula/library-system-api.git library-system-api
+cd library-system-api
+composer install
+```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 3. Environment configuration
 
-## Learning Laravel
+```bash
+cp .env.example .env
+```
+##### Generate the app key:
+```bash
+php artisan key:generate
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+```
+### 4. Database migration & seeding
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+php artisan migrate
+php artisan db:seed
+```
+### 5. Redis (for caching)
+```bash
+docker run -d --name redis -p 6379:6379 redis:7
+```
+### 6. Run the application
 
-## Laravel Sponsors
+```bash
+php artisan serve
+```
+#### API will be accessible at:
+```bash
+http://localhost:8000/api/v1/{route}
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Architecture Overview
+The project uses a Domain-Driven Design (DDD) style with clear separation between:
 
-### Premium Partners
+  - Domain – business rules and entities
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+  - Application – use cases (application services)
 
-## Contributing
+  - Infrastructure – Eloquent models, repositories, Redis, etc.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+  - Interfaces – HTTP controllers, requests, Swagger docs
 
-## Code of Conduct
+## Authentication
+Authentication is API token–based using Laravel Sanctum.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- Users login via `/api/v1/login` and receive a Bearer token.
+- Authenticated endpoints require header:``Authorization: Bearer {token}``
+- Logout via ``/api/v1/logout`` which deletes the current token.
+- Protected routes are wrapped with ``auth:sanctum`` middleware.
 
-## Security Vulnerabilities
+## API Endpoints
+#### 1. Auth
+``POST /api/v1/login``
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Login with email & password.
+    
+**Body :**
+```json
+{
+    "email": "user@example.com",
+    "password": "secret123"
+}
+```
+**Response :**
+```json
+{
+    "token": "plain-text-sanctum-token",
+    "token-type": "Bearer",
+    "user": {
+        "id": 1,
+        "name": "User",
+        "email": "user@example.com"
+    }
+}
+```
+``POST /api/v1/logout`` (auth required)
+Revokes current token.
 
-## License
+#### 2. Users
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+    POST /api/v1/users – register user (public)
+
+    GET /api/v1/users – list users (auth)
+
+    GET /api/v1/users/{id} – get one user (auth)
+
+    PATCH /api/v1/users/{id} – update (auth)
+
+    DELETE /api/v1/users/{id} – delete (auth; fails if user has active rentals)
+
+Example **create user**:
+```json
+POST /api/v1/users
+Content-Type: application/json
+
+{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password": "secret123",
+    "password_confirmation": "secret123"
+}
+```
+#### 3.  Books
+
+    GET /api/v1/books – list books (with filters / pagination)
+
+    GET /api/v1/books/{id} – show book
+
+    POST /api/v1/books – create book
+
+    PATCH /api/v1/books/{id} – update partially
+
+    DELETE /api/v1/books/{id} – delete (fails if book has active rentals)
+
+   - ##### GET /api/v1/books query params:
+                page (int) – page number
+
+                perPage (int) – items per page
+
+                sortBy (title, author, isbn, availability)
+
+                orderBy (asc, desc)
+
+                genre (string) – filter by genre
+
+                search (string) – search in title/author/isbn/genres
+
+        Example :
+        ```json
+            GET /api/v1/books?perPage=10&page=1&sortBy=title&orderBy=asc&genre=fantasy&search=tolkien
+            Content-Type: application/json
+     
+            {
+                "data": [
+                  {
+                    "id": 1,
+                    "title": "The Hobbit",
+                    "author": "J.R.R. Tolkien",
+                    "isbn": "1234567890",
+                    "description": "...",
+                    "genres": ["fantasy"],
+                    "stock": 3,
+                    "available": true
+                  }
+                ],
+                "pagination": {
+                    "current_page": 1,
+                    "per_page": 10,
+                    "total": 1,
+                    "last_page": 1
+                }
+            }           
+            
+        ```
+#### 4. Book Rentals
+        POST /api/v1/rentBooks - rent a book for a user, reduce book stock
+
+        GET /api/v1/getRentalReadingProgress/{rentalId} - get reading progress percentage
+
+        PATCH /api/v1/rentExtend/{rentalId} - extend due date (must be later than current, cannot extend finished rental)
+
+        PATCH /api/v1/updateRentProgress/{rentalId} - update reading progress (0–100, cannot update finished rental)
+
+        PATCH /api/v1/rentFinish/{rentalId} - finish rental (sets end date + progress = 100)
+
+Example **create book rental**:
+```json
+POST /api/v1/rentBooks
+Content-Type: application/json
+
+{
+    "book_id": 10 // set automatic due date for 2 weeks
+}
+```
+
+### Design Decisions
+#### DDD-style architecture
+Pros:
+- Clean separation between business logic (Domain), use cases (Application), and infrastructure (Eloquent, Redis)
+- Easy to write unit tests
+- Thin Controllers
+- Not depend on the framework
+
+
+  Cons:
+- Might feel like not suitable for small project
+
+#### Custom Domain Exceptions
+
+- Clean JSON errors
+- Consistent status codes (422, 404, etc.)
+
+#### Sanctum for API auth
+
+- Simple, easy developments.
+- Recommended By Laravel 

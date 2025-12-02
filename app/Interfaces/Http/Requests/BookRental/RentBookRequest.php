@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Interfaces\Http\Requests\BookRental;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateUserRequest extends FormRequest
+class RentBookRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,17 +22,14 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'     => 'sometimes|string|max:255',
-            'email'    => 'sometimes|email|unique:users,email',
-            'password' => 'sometimes|string|min:6',
-            'passwordConfirmation'=> 'required_with:password|same:password',
+            'book_id' => 'required|integer|min:255',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'email.unique'=>'Email already exists in the system.',
+
         ];
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Book;
+namespace App\Interfaces\Http\Controllers\Book;
 
 use App\Application\Book\DTO\CreateBookInput;
 use App\Application\Book\DTO\PatchBookDTO;
@@ -9,9 +9,9 @@ use App\Application\Book\UseCases\DeleteBook;
 use App\Application\Book\UseCases\GetAllBooks;
 use App\Application\Book\UseCases\GetBookById;
 use App\Application\Book\UseCases\PatchBook;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Book\CreateBookRequest;
-use App\Http\Requests\Book\PatchBookRequest;
+use App\Interfaces\Http\Controllers\Controller;
+use App\Interfaces\Http\Requests\Book\CreateBookRequest;
+use App\Interfaces\Http\Requests\Book\PatchBookRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use OpenApi\Annotations as OA;

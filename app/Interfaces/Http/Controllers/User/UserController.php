@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\User;
+namespace App\Interfaces\Http\Controllers\User;
 
 use App\Application\User\DTO\PatchUserDTO;
 use App\Application\User\DTO\RegisterUserInput;
@@ -9,9 +9,9 @@ use App\Application\User\UseCases\FetchAllUser;
 use App\Application\User\UseCases\GetUserById;
 use App\Application\User\UseCases\RegisterUser;
 use App\Application\User\UseCases\UpdateUser;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\User\RegisterUserRequest;
-use App\Http\Requests\User\UpdateUserRequest;
+use App\Interfaces\Http\Controllers\Controller;
+use App\Interfaces\Http\Requests\User\RegisterUserRequest;
+use App\Interfaces\Http\Requests\User\UpdateUserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 

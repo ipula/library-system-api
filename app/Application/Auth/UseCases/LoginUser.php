@@ -4,6 +4,8 @@ namespace App\Application\Auth\UseCases;
 
 use App\Application\Auth\DTO\LoginResultDTO;
 use App\Application\Auth\DTO\LoginUserDTO;
+use App\Application\User\DTO\UserDTO;
+use App\Domain\User\Entities\User;
 use App\Domain\User\Repositories\UserRepository;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
@@ -25,7 +27,14 @@ class LoginUser
         $user->tokens()->delete();
 
         $token = $user->createToken('api-token')->plainTextToken;
+        $userEntity = User::register(
+            name: $user->name,
+            email:$user->email,
+            passwordHash: $user->password,
+        );
+        $userEntity->setId($user->id);
+        $userDto = UserDTO::fromEntity($userEntity);
 
-        return new LoginResultDTO($token);
+        return new LoginResultDTO($token,userDTO: $userDto);
     }
 }

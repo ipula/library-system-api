@@ -23,7 +23,7 @@ class EloquentBookRentalRepository implements BookRentalRepository
         $model->book_id    = $rental->getBookId();
         $model->start_date = $rental->getStartDate()->format('Y-m-d H:i:s');
         $model->due_date   = $rental->getDueDate()->format('Y-m-d H:i:s');
-        $model->end_date   = $rental->getEndDate()->format('Y-m-d H:i:s');
+        $model->end_date   = $rental->getEndDate()?->format('Y-m-d H:i:s');
         $model->progress   = $rental->getProgressPercent();
 
         $model->save();

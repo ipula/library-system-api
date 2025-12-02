@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Interfaces\Http\Controllers;
 
 /**
  * @OA\Info(
