@@ -23,7 +23,7 @@ jobs:
           php artisan key:generate
       - name: Run unit tests
         run: |
-            php artisan test --testsuite=Unit
+            php artisan test
 
   deploy:
     needs: test
