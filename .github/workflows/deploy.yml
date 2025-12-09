@@ -4,8 +4,42 @@ on:
     branches:
       - main
 jobs:
-  deploy:
+  test:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Setup PHP 8.5 (stable)
+        uses: shivammathur/setup-php@v2
+        with:
+            php-version: '8.5'
+      - name: Install Composer Dependencies
+        run: composer install --no-dev --optimize-autoloader
+      - name: Generate Application Key
+        run: |
+          php artisan key:generate
+      - name: Run unit tests
+        run: |
+            php artisan test --testsuite=Unit
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+           MYSQL_ROOT_PASSWORD: root
+           MYSQL_DATABASE: library-api
+           MYSQL_USER: appuser
+           MYSQL_PASSWORD: apppass
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -15,21 +49,16 @@ jobs:
         with:
             php-version: '8.5'
 
-      - name: Start MySQL Service
-        run: |
-            sudo systemctl start mysql
-
-      - name: Configure MySQL
-        run: |
-            sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root'; FLUSH PRIVILEGES;"
-            mysql -uroot -proot -e "CREATE DATABASE IF NOT EXISTS library_system_test;"
-
       - name: Copy .env File
+        env:
+            DB_DATABASE: library-api
+            DB_USERNAME: apppass
+            DB_PASSWORD: apppass
         run: |
             cp .env.example .env
-            sed -i 's/DB_DATABASE=.*/DB_DATABASE=library_system_test/' .env
-            sed -i 's/DB_USERNAME=/DB_USERNAME=root/' .env
-            sed -i 's/DB_PASSWORD=/DB_PASSWORD=root/' .env
+            sed -i `s/DB_DATABASE=.*/DB_DATABASE={{$DB_DATABASE}}/` .env
+            sed -i 's/DB_USERNAME=/DB_USERNAME={{$DB_USERNAME}}/' .env
+            sed -i 's/DB_PASSWORD=/DB_PASSWORD={{$DB_PASSWORD}}/' .env
 
       - name: Install Composer Dependencies
         run: composer install --no-dev --optimize-autoloader
@@ -42,6 +71,3 @@ jobs:
         run: |
             php artisan migrate --force
             php artisan db:seed --force
-      - name: Run unit tests
-        run: |
-            php artisan test --testsuite=Unit
