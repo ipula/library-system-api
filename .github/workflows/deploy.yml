@@ -15,6 +15,9 @@ jobs:
             php-version: '8.5'
       - name: Install Composer Dependencies
         run: composer install --no-dev --optimize-autoloader
+      - name: Copy .env File
+        run: |
+            cp .env.example .env
       - name: Generate Application Key
         run: |
           php artisan key:generate
@@ -56,9 +59,9 @@ jobs:
             DB_PASSWORD: apppass
         run: |
             cp .env.example .env
-            sed -i `s/DB_DATABASE=.*/DB_DATABASE={{$DB_DATABASE}}/` .env
-            sed -i 's/DB_USERNAME=/DB_USERNAME={{$DB_USERNAME}}/' .env
-            sed -i 's/DB_PASSWORD=/DB_PASSWORD={{$DB_PASSWORD}}/' .env
+            sed -i 's/DB_DATABASE=.*/DB_DATABASE='"$DB_DATABASE"'/' .env
+            sed -i 's/DB_USERNAME=/DB_USERNAME='"$DB_USERNAME"'/' .env
+            sed -i 's/DB_PASSWORD=/DB_PASSWORD='"$DB_PASSWORD"'/' .env
 
       - name: Install Composer Dependencies
         run: composer install --no-dev --optimize-autoloader
