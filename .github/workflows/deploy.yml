@@ -55,7 +55,7 @@ jobs:
       - name: Copy .env File
         env:
             DB_DATABASE: library-api
-            DB_USERNAME: apppass
+            DB_USERNAME: appuser
             DB_PASSWORD: apppass
         run: |
             cp .env.example .env
