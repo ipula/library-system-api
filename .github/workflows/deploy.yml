@@ -14,7 +14,7 @@ jobs:
         with:
             php-version: '8.5'
       - name: Install Composer Dependencies
-        run: composer install --no-dev --optimize-autoloader
+        run: composer install --optimize-autoloader
       - name: Copy .env File
         run: |
             cp .env.example .env
@@ -23,7 +23,7 @@ jobs:
           php artisan key:generate
       - name: Run unit tests
         run: |
-            vendor/bin/phpunit
+            php artisan test --testsuite=Unit
 
   deploy:
     needs: test
@@ -64,7 +64,7 @@ jobs:
             sed -i 's/DB_PASSWORD=/DB_PASSWORD='"$DB_PASSWORD"'/' .env
 
       - name: Install Composer Dependencies
-        run: composer install --no-dev --optimize-autoloader
+        run: composer install --optimize-autoloader
 
       - name: Generate Application Key
         run: |
