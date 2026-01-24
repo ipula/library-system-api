@@ -1,18 +1,28 @@
 # --------------------------
 # Stage 1: Composer deps
 # --------------------------
-FROM composer:latest
+FROM composer:2 AS vendor
 
 WORKDIR /app
 
+RUN apk add --no-cache \
+    icu-dev \
+    libzip-dev \
+    oniguruma-dev \
+    $PHPIZE_DEPS \
+ && docker-php-ext-install intl zip mbstring
+
 COPY composer.json composer.lock ./
-RUN composer install \
+
+RUN COMPOSER_MEMORY_LIMIT=-1 composer install \
     --no-dev \
     --no-interaction \
     --prefer-dist \
-    --optimize-autoloader
+    --optimize-autoloader \
+    --no-scripts
 
 COPY . .
+
 RUN composer dump-autoload --no-dev --optimize
 
 
@@ -23,13 +33,11 @@ FROM php:8.3-fpm-alpine
 
 WORKDIR /var/www/html
 
-# System deps
 RUN apk add --no-cache \
-    bash curl git supervisor \
+    bash curl git \
     icu-dev oniguruma-dev libzip-dev \
     freetype-dev libjpeg-turbo-dev libpng-dev
 
-# PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
  && docker-php-ext-install \
     pdo_mysql \
@@ -39,21 +47,16 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     gd \
     opcache
 
-# Redis extension (optional but recommended)
 RUN apk add --no-cache $PHPIZE_DEPS \
  && pecl install redis \
  && docker-php-ext-enable redis \
  && apk del $PHPIZE_DEPS
 
-# Copy app from build stage
 COPY --from=vendor /app /var/www/html
 
-# Permissions
 RUN chown -R www-data:www-data \
-    /var/www/html/storage \
-    /var/www/html/bootstrap/cache
+    storage bootstrap/cache
 
-# PHP config
 COPY docker/php.ini /usr/local/etc/php/conf.d/custom.ini
 
 USER www-data
