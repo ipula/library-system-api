@@ -25,7 +25,7 @@ jobs:
         run: |
             php artisan test --testsuite=Unit
 
-  deploy:
+  migrations_and_seeds:
     needs: test
     runs-on: ubuntu-latest
     services:
@@ -74,3 +74,58 @@ jobs:
         run: |
             php artisan migrate --force
             php artisan db:seed --force
+            
+  build-and-push:
+    needs: migrations_and_seeds
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with: 
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:${{ github.sha }}
+  
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name }}
+    steps:
+      - name: Deploy to Production Server
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: |
+            set -e
+            cd /opt/library-api
+
+            echo "Pull latest image"
+            docker compose -f docker-compose.prod.yml pull
+
+            echo "Restart containers"
+            docker compose -f docker-compose.prod.yml up -d
+
+            echo "Run migrations"
+            docker compose -f docker-compose.prod.yml exec -T app php artisan migrate --force
+
+            echo "Optimize caches"
+            docker compose -f docker-compose.prod.yml exec -T app php artisan config:cache
+            docker compose -f docker-compose.prod.yml exec -T app php artisan route:cache
+
+            echo "Done"
