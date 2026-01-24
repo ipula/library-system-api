@@ -1,7 +1,7 @@
 # --------------------------
 # Stage 1: Composer deps
 # --------------------------
-FROM composer:2 AS vendor
+FROM composer:latest
 
 WORKDIR /app
 
