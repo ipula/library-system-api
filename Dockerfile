@@ -29,7 +29,7 @@ RUN composer dump-autoload --no-dev --optimize
 # --------------------------
 # Stage 2: PHP Runtime
 # --------------------------
-FROM php:8.3-fpm-alpine
+FROM php:8.4-fpm-alpine
 
 WORKDIR /var/www/html
 
