@@ -33,11 +33,13 @@ FROM php:8.4-fpm-alpine
 
 WORKDIR /var/www/html
 
+# System deps
 RUN apk add --no-cache \
     bash curl git \
     icu-dev oniguruma-dev libzip-dev \
     freetype-dev libjpeg-turbo-dev libpng-dev
 
+# PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
  && docker-php-ext-install \
     pdo_mysql \
@@ -47,20 +49,29 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     gd \
     opcache
 
+# Redis extension
 RUN apk add --no-cache $PHPIZE_DEPS \
  && pecl install redis \
  && docker-php-ext-enable redis \
  && apk del $PHPIZE_DEPS
 
+# Copy app
 COPY --from=vendor /app /var/www/html
 
-RUN chown -R www-data:www-data \
-    storage bootstrap/cache
-
+# Copy PHP config
 COPY docker/php.ini /usr/local/etc/php/conf.d/custom.ini
 
+# Copy entrypoint (as root)
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+
+# Permissions (as root)
+RUN chmod +x /usr/local/bin/entrypoint.sh \
+ && chown -R www-data:www-data /var/www/html \
+ && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Switch to non-root user
 USER www-data
 
 EXPOSE 9000
 
-CMD ["php-fpm"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
