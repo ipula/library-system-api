@@ -22,7 +22,7 @@ RUN COMPOSER_MEMORY_LIMIT=-1 composer install \
 
 COPY . .
 
-RUN composer dump-autoload --no-dev --optimize
+RUN composer dump-autoload --optimize
 
 
 # --------------------------
