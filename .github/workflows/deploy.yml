@@ -121,6 +121,9 @@ jobs:
             echo "Restart containers"
             docker compose -f docker-compose.prod.yml up -d
 
+            echo "Set permissions for .env file"
+            docker compose -f docker-compose.prod.yml exec -T app chmod 664 /var/www/html/.env || true
+
             echo "Run key generate"
             docker compose -f docker-compose.prod.yml exec -T app php artisan key:generate
 
