@@ -22,7 +22,7 @@ class BookRentalModelFactory extends Factory
             'start_date' => $start,
             'due_date'   => $due,
             'end_date'   => null,
-            'progress' => fake()->numberBetween(0, 90),
+            'progress' => $this->fake()->numberBetween(0, 90),
         ];
     }
 
@@ -30,7 +30,7 @@ class BookRentalModelFactory extends Factory
     {
         return $this->state(function () {
             return [
-                'end_date' => fake()->dateTimeBetween('-1 week', 'now'),
+                'end_date' => $this->fake()->dateTimeBetween('-1 week', 'now'),
                 'progress' => 100,
             ];
         });
