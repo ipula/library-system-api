@@ -15,8 +15,7 @@ Route::prefix('v1')->group(function () {
         ]);
     })->name('password.reset');
     Route::post('resetPassword', [AuthController::class, 'resetPassword']);
-    // Route::apiResource('users', UserController::class)->only(['store']);
-    Route::apiResource('users', UserController::class);
+    Route::apiResource('users', UserController::class)->only(['store']);
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('logout', [AuthController::class, 'logout']);
