@@ -15,7 +15,6 @@ RUN apk add --no-cache \
 COPY composer.json composer.lock ./
 
 RUN COMPOSER_MEMORY_LIMIT=-1 composer install \
-    --no-dev \
     --no-interaction \
     --prefer-dist \
     --optimize-autoloader \

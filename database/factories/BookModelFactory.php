@@ -11,12 +11,12 @@ class BookModelFactory extends Factory
     public function definition()
     {
         return [
-            'title' => $this->faker->words($this->faker->numberBetween(2, 5), true),
-            'author' => $this->faker->firstName(),
-            'description' => $this->faker->paragraph(1),
-            'genres' => $this->faker->randomElements(['Fiction', 'Horror', 'Drama', 'Fantasy', 'Comedy', 'History'], $this->faker->numberBetween(1, 3)),
-            'stock' => $this->faker->numberBetween(0, 10),
-            'isbn'=> $this->faker->unique()->md5()
+            'title' => fake()->words(fake()->numberBetween(2, 5), true),
+            'author' => fake()->firstName(),
+            'description' => fake()->paragraph(1),
+            'genres' => fake()->randomElements(['Fiction', 'Horror', 'Drama', 'Fantasy', 'Comedy', 'History'], fake()->numberBetween(1, 3)),
+            'stock' => fake()->numberBetween(0, 10),
+            'isbn'=> fake()->unique()->md5()
         ];
     }
 }
