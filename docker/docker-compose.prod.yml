@@ -4,8 +4,8 @@ services:
     image: ghcr.io/ipula/library-system-api:latest
     container_name: library-app
     restart: unless-stopped
-    mem_limit: 512m
-    cpus: "0.5"
+    mem_limit: 1g
+    cpus: "1.0"
     volumes:
       - /opt/library-api/.env:/var/www/html/.env
       - /opt/library-api/storage:/var/www/html/storage
