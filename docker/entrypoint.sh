@@ -3,6 +3,11 @@ set -e
 
 echo "Starting Laravel..."
 
+cd /var/www/html
+
+# Put app in maintenance mode (ignore if already down)
+php artisan down || true
+
 # Fix permissions (DO NOT touch .env)
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
