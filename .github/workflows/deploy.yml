@@ -114,8 +114,9 @@ jobs:
           script: |
             set -e
             cd /opt/library-api
-            mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache
-            sudo chown -R www-data:www-data storage bootstrap/cache
+            mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache
+            # Use UID 82 (www-data in Alpine container)
+            sudo chown -R 82:82 storage bootstrap/cache
             sudo chmod -R 775 storage bootstrap/cache
       - name: Start Containers for Backup
         uses: appleboy/ssh-action@v1.2.0
@@ -186,5 +187,8 @@ jobs:
             echo "Optimize caches"
             docker compose -f docker-compose.prod.yml exec -T app php artisan config:cache
             docker compose -f docker-compose.prod.yml exec -T app php artisan route:cache
+
+            echo "Bring application out of maintenance mode"
+            docker compose -f docker-compose.prod.yml exec -T app php artisan up
 
             echo "Done"
