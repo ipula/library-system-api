@@ -1,0 +1,77 @@
+services:
+
+  app:
+    image: ghcr.io/ipula/library-system-api:latest
+    container_name: library-app
+    restart: unless-stopped
+    mem_limit: 512m
+    cpus: "0.5"
+    volumes:
+      - /opt/library-api/.env:/var/www/html/.env
+      - /opt/library-api/storage:/var/www/html/storage
+      - /opt/library-api/logs:/var/www/html/logs
+    env_file:
+      - .env
+    environment:
+      APP_MAINTENANCE_MODE: "false"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    stop_grace_period: 30s
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - backend
+
+  nginx:
+    image: nginx:alpine
+    container_name: library-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.prod.conf:/etc/nginx/conf.d/default.conf:ro
+      - /opt/library-api/storage:/var/www/html/storage:ro
+    depends_on:
+      - app
+    networks:
+      - backend
+
+  mysql:
+    image: mysql:8.0
+    container_name: library-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    volumes:
+    - mysql_data:/var/lib/mysql
+    networks:
+      - backend
+
+  redis:
+    image: redis:7-alpine
+    container_name: library-redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    networks:
+      - backend
+
+volumes:
+  mysql_data:
+  redis_data:
+
+networks:
+  backend:
